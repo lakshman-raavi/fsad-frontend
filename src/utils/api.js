@@ -2,9 +2,8 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 
 const api = axios.create({
-    // Use relative path if the frontend is also deployed on Render (behind a proxy)
-    // or use absolute URL from environment variable
-    baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
+    // Use absolute URL to your live Render backend
+    baseURL: import.meta.env.VITE_API_BASE_URL || 'https://fsad-backend-2.onrender.com/api',
     headers: {
         'Content-Type': 'application/json',
     }
