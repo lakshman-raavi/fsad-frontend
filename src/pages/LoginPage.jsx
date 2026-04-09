@@ -108,9 +108,22 @@ const LoginPage = () => {
             toast.error('Invalid CAPTCHA');
             return;
         }
-        setLoading(true);
-        // For Faculty, we use the studentForm state which has 'studentId' (Faculty ID/Email)
+
         const credentials = tab === 'admin' ? adminForm : studentForm;
+        
+        if (tab === 'faculty') {
+            const input = credentials.studentId.trim();
+            if (input.includes('.') && !input.includes('@') && !input.toUpperCase().startsWith('FAC')) {
+                toast.error("Please include the '@' symbol.");
+                return;
+            }
+            if (input.includes('@') && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(input)) {
+                toast.error('Please enter a valid email address.');
+                return;
+            }
+        }
+
+        setLoading(true);
         const result = await login(credentials, tab);
         setLoading(false);
         if (result.success) {
@@ -128,6 +141,17 @@ const LoginPage = () => {
             toast.error('Invalid CAPTCHA');
             return;
         }
+
+        const input = studentForm.studentId.trim();
+        if (input.includes('.') && !input.includes('@') && !input.toUpperCase().startsWith('STU')) {
+            toast.error(" Please include the '@' symbol.");
+            return;
+        }
+        if (input.includes('@') && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(input)) {
+            toast.error('Please enter a valid email address.');
+            return;
+        }
+
         setLoading(true);
         const result = await login(studentForm, 'student');
         setLoading(false);
@@ -142,6 +166,17 @@ const LoginPage = () => {
 
     const handleRegister = async (e) => {
         e.preventDefault();
+
+        const email = regForm.email.trim();
+        if (!email.includes('@')) {
+            toast.error("Email is missing the '@' symbol.");
+            return;
+        }
+        if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
+            toast.error('Please enter a valid email address.');
+            return;
+        }
+
         if (regForm.password.length < 6) { toast.error('Password must be at least 6 characters'); return; }
         if (!regCaptchaRef.current?.validate()) {
             toast.error('Invalid CAPTCHA');
@@ -173,9 +208,22 @@ const LoginPage = () => {
 
     const handleForgotPassword = async (e) => {
         e.preventDefault();
-        if (!forgotEmail) { toast.error('Please enter your email'); return; }
+        const email = forgotEmail.trim();
+        if (!email) { 
+            toast.error('Please enter your email'); 
+            return; 
+        }
+        if (!email.includes('@')) {
+            toast.error("Email is missing the '@' symbol.");
+            return;
+        }
+        if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
+            toast.error('Please enter a valid email address.');
+            return;
+        }
+
         setLoading(true);
-        const result = await forgotPassword(forgotEmail);
+        const result = await forgotPassword(email);
         setLoading(false);
         if (result.success) {
             toast.success('OTP sent to your email.');
